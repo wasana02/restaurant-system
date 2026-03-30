@@ -1,0 +1,202 @@
+<?php
+// ============================================================
+// about.php — About Page (converted from about.html)
+// ============================================================
+session_start();
+require_once 'includes/functions.php';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Una Beach Restaurant – About</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNavbar">
+  <div class="container">
+    <a class="navbar-brand" href="index.php">
+      <img src="images/logo.png" alt="Logo" class="brand-logo"
+           onerror="this.src='https://placehold.co/62x62/C0622A/FFF?text=UB'"/>
+      <div class="brand-text-block">
+        <span class="brand-name">Una Beach Restaurant</span>
+        <span class="brand-tagline">Authentic Sri Lankan Cuisine</span>
+      </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+            aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="menu.php">Menu</a></li>
+        <li class="nav-item"><a class="nav-link active" href="about.php">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+        <?php if (isset($_SESSION['user_id'])): ?>
+          <li class="nav-item">
+            <a class="nav-link" href="dashboard.php">
+              <i class="bi bi-person-circle me-1"></i><?= htmlspecialchars($_SESSION['username']) ?>
+            </a>
+          </li>
+          <li class="nav-item"><a class="nav-link text-danger" href="auth/logout.php">Logout</a></li>
+        <?php else: ?>
+          <li class="nav-item"><a class="nav-link" href="auth/login.php">Login</a></li>
+          <li class="nav-item ms-1">
+            <a href="auth/register.php" class="btn btn-sm"
+               style="background:#C0622A;color:#fff;border-radius:8px;padding:6px 16px;font-weight:600;">Register</a>
+          </li>
+        <?php endif; ?>
+        <li class="nav-item ms-2">
+          <button class="btn-cart position-relative" onclick="window.location.href='menu.php'" aria-label="View cart">
+            <i class="bi bi-cart3"></i>
+            <span class="cart-badge" id="cartBadge">0</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1>About Us</h1>
+  <p>Our Story &amp; Our People</p>
+</div>
+
+<!-- OUR STORY -->
+<section class="story-section">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6 fade-up">
+        <div class="story-img">
+          <img src="images/about.jpg" alt="Restaurant Story"
+               onerror="this.src='https://placehold.co/600x380/C0622A/FFF?text=Una+Beach+Story'"/>
+        </div>
+      </div>
+      <div class="col-lg-6 fade-up story-text" style="transition-delay:0.15s">
+        <h2>Our <span>Story</span></h2>
+        <p>Nestled along the golden shores of Una Beach in Galle, our restaurant was born from a deep love for authentic Sri Lankan cuisine and the natural beauty of our island home.</p>
+        <p>Founded in 2018, Una Beach Restaurant started as a small beachside café serving traditional hoppers and curry to local fishermen. Over the years, word spread about our soulful cooking, and today we welcome guests from around the world.</p>
+        <p>Every dish we serve carries the spirit of Sri Lanka — vibrant spices, fresh ocean catches, and recipes passed down through generations of our family. Dining here is not just a meal; it's an experience of culture, warmth, and the sound of waves.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section">
+  <div class="container">
+    <div class="row g-4 text-center">
+      <div class="col-6 col-md-3 fade-up">
+        <div class="stat-box">
+          <span class="stat-num" data-target="7">0</span><span class="stat-num">+</span>
+          <div class="stat-label">Years of Experience</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3 fade-up" style="transition-delay:0.1s">
+        <div class="stat-box">
+          <span class="stat-num" data-target="50">0</span><span class="stat-num">+</span>
+          <div class="stat-label">Menu Items</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3 fade-up" style="transition-delay:0.2s">
+        <div class="stat-box">
+          <span class="stat-num" data-target="10000">0</span><span class="stat-num">+</span>
+          <div class="stat-label">Happy Customers</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3 fade-up" style="transition-delay:0.3s">
+        <div class="stat-box">
+          <span class="stat-num">4.9★</span>
+          <div class="stat-label">Average Rating</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="values-section">
+  <div class="container">
+    <h2 class="section-title text-center d-block mb-5">What We Stand For</h2>
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-4 fade-up">
+        <div class="value-card">
+          <div class="value-icon"><i class="bi bi-basket2-fill"></i></div>
+          <h5>Fresh &amp; Local</h5>
+          <p>We source all ingredients from local farmers and fishermen to ensure maximum freshness and support our community.</p>
+        </div>
+      </div>
+      <div class="col-md-4 fade-up" style="transition-delay:0.15s">
+        <div class="value-card">
+          <div class="value-icon"><i class="bi bi-heart-fill"></i></div>
+          <h5>Cooked with Love</h5>
+          <p>Every recipe carries the warmth of traditional Sri Lankan home cooking, prepared with genuine care for every guest.</p>
+        </div>
+      </div>
+      <div class="col-md-4 fade-up" style="transition-delay:0.3s">
+        <div class="value-card">
+          <div class="value-icon"><i class="bi bi-tree-fill"></i></div>
+          <h5>Sustainable Dining</h5>
+          <p>We are committed to eco-friendly practices — from biodegradable packaging to reducing food waste wherever possible.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="team-section">
+  <div class="container">
+    <h2 class="section-title text-center d-block mb-5">Meet Our Team</h2>
+    <div class="row g-4 justify-content-center">
+      <div class="col-md-4 col-lg-3 fade-up">
+        <div class="team-card">
+          <img src="images/chef.jpg" alt="Head Chef" onerror="this.src='https://placehold.co/300x220/C0622A/FFF?text=Head+Chef'"/>
+          <div class="team-card-body"><h5>Nimal Perera</h5><p>Head Chef — 20 years of experience in Sri Lankan cuisine</p></div>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-3 fade-up" style="transition-delay:0.15s">
+        <div class="team-card">
+          <img src="images/chef2.jpg" alt="Sous Chef" onerror="this.src='https://placehold.co/300x220/A0522D/FFF?text=Sous+Chef'"/>
+          <div class="team-card-body"><h5>Kushan De Silva</h5><p>Sous Chef — Specialist in rice &amp; curry traditions</p></div>
+        </div>
+      </div>
+      <div class="col-md-4 col-lg-3 fade-up" style="transition-delay:0.3s">
+        <div class="team-card">
+          <img src="images/manager.jpg" alt="Manager" onerror="this.src='https://placehold.co/300x220/8B4513/FFF?text=Manager'"/>
+          <div class="team-card-body"><h5>Roshani Fernando</h5><p>Restaurant Manager — Ensuring a perfect dining experience</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section class="cta-section fade-up">
+  <div class="container">
+    <h2>Ready to Experience the Taste?</h2>
+    <p>Visit us at Una Beach or order online — we'd love to serve you!</p>
+    <a href="menu.php" class="btn-cta me-3">View Menu</a>
+    <a href="contact.php" class="btn-cta btn-cta-outline">Contact Us</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#2C1A0E;color:rgba(255,255,255,0.7);text-align:center;padding:22px 0;font-size:0.88rem;">
+  <p style="color:rgba(255,255,255,0.82);margin-bottom:2px;">© 2026 Una Beach Restaurant. All rights reserved.</p>
+  <small>Authentic Sri Lankan Cuisine by the Beach</small>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/main.js"></script>
+<script src="js/about.js"></script>
+</body>
+</html>

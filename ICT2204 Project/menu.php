@@ -1,0 +1,283 @@
+<?php
+// ============================================================
+// menu.php — Menu Page (converted from menu.html)
+// ============================================================
+session_start();
+require_once 'includes/functions.php';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Una Beach Restaurant – Menu</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNavbar">
+  <div class="container">
+    <a class="navbar-brand" href="index.php">
+      <img src="images/logo.png" alt="Logo" class="brand-logo"
+           onerror="this.src='https://placehold.co/62x62/C0622A/FFF?text=UB'"/>
+      <div class="brand-text-block">
+        <span class="brand-name">Una Beach Restaurant</span>
+        <span class="brand-tagline">Authentic Sri Lankan Cuisine</span>
+      </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+            aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+        <li class="nav-item"><a class="nav-link active" href="menu.php">Menu</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+        <?php if (isset($_SESSION['user_id'])): ?>
+          <li class="nav-item">
+            <a class="nav-link" href="dashboard.php">
+              <i class="bi bi-person-circle me-1"></i><?= htmlspecialchars($_SESSION['username']) ?>
+            </a>
+          </li>
+          <li class="nav-item"><a class="nav-link text-danger" href="auth/logout.php">Logout</a></li>
+        <?php else: ?>
+          <li class="nav-item"><a class="nav-link" href="auth/login.php">Login</a></li>
+          <li class="nav-item ms-1">
+            <a href="auth/register.php" class="btn btn-sm"
+               style="background:#C0622A;color:#fff;border-radius:8px;padding:6px 16px;font-weight:600;">Register</a>
+          </li>
+        <?php endif; ?>
+        <li class="nav-item ms-2">
+          <button class="btn-cart position-relative" onclick="toggleCart()" aria-label="Open cart">
+            <i class="bi bi-cart3"></i>
+            <span class="cart-badge" id="cartBadge">0</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1>Our Menu</h1>
+  <p>Authentic Sri Lankan Cuisine</p>
+</div>
+
+<!-- LIVE SEARCH BAR -->
+<div class="container pt-4 pb-2">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="input-group menu-search-wrap">
+        <span class="input-group-text bg-white border-end-0">
+          <i class="bi bi-search text-muted"></i>
+        </span>
+        <input type="text" class="form-control border-start-0"
+               id="menuSearch" placeholder="Search for a dish..."
+               oninput="filterMenu(this.value)" autocomplete="off"/>
+        <button class="btn btn-outline-secondary border-start-0"
+                onclick="clearSearch()" id="clearBtn" style="display:none;">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MENU CATEGORIES -->
+<div class="container py-3" id="menuContainer">
+  <div class="category-header">Appetizers / Starters</div>
+  <div class="row g-3 mb-2" id="starters-row"></div>
+  <div class="category-header">Rice &amp; Curry (Main Dishes)</div>
+  <div class="row g-3 mb-2" id="ricecurry-row"></div>
+  <div class="category-header">Fried Rice &amp; Noodles</div>
+  <div class="row g-3 mb-2" id="friednoodles-row"></div>
+  <div class="category-header">Kottu Roti</div>
+  <div class="row g-3 mb-2" id="kottu-row"></div>
+  <div class="category-header">Desserts</div>
+  <div class="row g-3 mb-2" id="desserts-row"></div>
+  <div class="category-header">Beverages</div>
+  <div class="row g-3 mb-4" id="beverages-row"></div>
+  <div id="noResults" class="text-center py-5" style="display:none;">
+    <i class="bi bi-emoji-frown" style="font-size:2.5rem;color:var(--accent);"></i>
+    <p class="mt-3 text-muted">No dishes found. Try a different search.</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:#2C1A0E;color:rgba(255,255,255,0.7);text-align:center;padding:22px 0;font-size:0.88rem;">
+  <p style="color:rgba(255,255,255,0.82);margin-bottom:2px;">© 2026 Una Beach Restaurant. All rights reserved.</p>
+  <small>Authentic Sri Lankan Cuisine by the Beach</small>
+</footer>
+
+<!-- CART OVERLAY + SIDEBAR (unchanged from menu.html) -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h5><i class="bi bi-cart3 me-2"></i>Your Cart</h5>
+    <button class="btn-close-cart" onclick="toggleCart()"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div class="cart-empty" id="cartEmpty">
+    <i class="bi bi-cart-x"></i>
+    <p class="fw-bold">Your cart is empty</p>
+    <small>Looks like you haven't added any items yet.</small><br/>
+    <button class="btn-add mt-3" style="width:auto;padding:8px 24px;" onclick="toggleCart()">Browse Menu</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-summary" id="cartSummary" style="display:none;">
+    <div class="d-flex justify-content-between mb-2"><span>Subtotal</span><span id="cartSubtotal">LKR 0</span></div>
+    <hr style="margin:10px 0;"/>
+    <div class="d-flex justify-content-between fw-bold mb-3"><span>Total</span><span id="cartTotal">LKR 0</span></div>
+    <button class="btn-checkout mb-2" onclick="openTakeaway()">
+      <i class="bi bi-bag-fill me-2"></i>Takeaway Order
+    </button>
+    <button class="btn-checkout btn-dinein mb-2" onclick="openDineIn()">
+      <i class="bi bi-cup-hot-fill me-2"></i>Dine In &amp; Book Table
+    </button>
+    <button class="btn-continue" onclick="toggleCart()">Continue Shopping</button>
+  </div>
+</div>
+
+<!-- MODAL 1 — TAKEAWAY (unchanged) -->
+<div class="modal fade" id="takeawayModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content checkout-modal rounded-4 overflow-hidden border-0">
+      <div id="takeawayForm">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-bag-fill me-2"></i>Takeaway Order</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="order-summary-box mb-4">
+            <h6 class="mb-3">Order Summary</h6>
+            <div id="takeawayItems"></div>
+            <hr/>
+            <div class="d-flex justify-content-between mb-1"><span>Subtotal</span><span id="takeawaySubtotal">LKR 0</span></div>
+            <div class="d-flex justify-content-between mb-1"><span>Delivery Fee</span><span>LKR 200</span></div>
+            <hr/>
+            <div class="d-flex justify-content-between fw-bold"><span>Total</span><span id="takeawayTotal">LKR 0</span></div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Full Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="tName"
+                   placeholder="Enter your full name"
+                   value="<?= isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : '' ?>"/>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Phone Number <span class="text-danger">*</span></label>
+            <input type="tel" class="form-control" id="tPhone" placeholder="Enter your phone number" inputmode="numeric"/>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Delivery Address <span class="text-danger">*</span></label>
+            <textarea class="form-control" id="tAddress" rows="3" placeholder="Enter your delivery address"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-place" onclick="placeTakeaway()">Place Order</button>
+        </div>
+      </div>
+      <div id="takeawayConfirmed" style="display:none;text-align:center;padding:50px 30px;">
+        <div class="confirm-icon mb-3"><i class="bi bi-check-circle-fill"></i></div>
+        <h4 style="color:var(--primary-dk);">Order Confirmed!</h4>
+        <p class="mt-2" style="color:var(--text-muted);">Thank you! We will contact you shortly to confirm your takeaway order.</p>
+        <button class="btn-place mt-4" style="max-width:200px;margin:0 auto;" onclick="resetTakeaway()">Continue Shopping</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 2 — DINE IN (unchanged) -->
+<div class="modal fade" id="dineinModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+    <div class="modal-content checkout-modal rounded-4 overflow-hidden border-0">
+      <div id="dineinForm">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-cup-hot-fill me-2"></i>Dine In &amp; Table Booking</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="order-summary-box mb-4">
+            <h6 class="mb-3">Order Summary</h6>
+            <div id="dineinItems"></div>
+            <hr/>
+            <div class="d-flex justify-content-between fw-bold"><span>Total</span><span id="dineinTotal">LKR 0</span></div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Full Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="dName"
+                     placeholder="Enter your full name"
+                     value="<?= isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : '' ?>"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Phone Number <span class="text-danger">*</span></label>
+              <input type="tel" class="form-control" id="dPhone" placeholder="Enter your phone number" inputmode="numeric"/>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Party Size <span class="text-danger">*</span></label>
+            <select class="form-select" id="partySize">
+              <option value="">Select party size</option>
+              <option value="1">1 Person</option>
+              <option value="couple">Couple (2 people)</option>
+              <option value="family">Family (3–5 people)</option>
+              <option value="group">Group (6+ people)</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Seating Preference <span class="text-danger">*</span></label>
+            <div class="d-flex gap-3">
+              <div class="order-type-btn" id="btnIndoor" onclick="selectSeating('indoor')">
+                <i class="bi bi-house-fill me-2"></i>Indoor
+              </div>
+              <div class="order-type-btn" id="btnOutdoor" onclick="selectSeating('outdoor')">
+                <i class="bi bi-tree-fill me-2"></i>Outdoor
+              </div>
+            </div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Date <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" id="bookingDate"/>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Time <span class="text-danger">*</span></label>
+              <input type="time" class="form-control" id="bookingTime" min="10:00" max="23:00"/>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Special Requests <span class="text-muted fw-normal" style="font-size:0.85rem;">(optional)</span></label>
+            <textarea class="form-control" id="specialRequests" rows="2"
+                      placeholder="e.g. birthday celebration, wheelchair access, high chair..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-place" onclick="placeDineIn()">Confirm Booking</button>
+        </div>
+      </div>
+      <div id="dineinConfirmed" style="display:none;text-align:center;padding:50px 30px;">
+        <div class="confirm-icon mb-3"><i class="bi bi-check-circle-fill"></i></div>
+        <h4 style="color:var(--primary-dk);">Booking Confirmed!</h4>
+        <p class="mt-2" style="color:var(--text-muted);">Your table has been booked successfully!<br/>We will contact you shortly to confirm your reservation.</p>
+        <button class="btn-place mt-4" style="max-width:200px;margin:0 auto;" onclick="resetDineIn()">Continue Shopping</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/main.js"></script>
+<!-- Pass PHP session status to JavaScript -->
+<script>
+  var isLoggedIn = <?= isset($_SESSION['user_id']) ? 'true' : 'false' ?>;
+  var loginUrl   = 'auth/login.php';
+</script>
+<script src="js/menu.js"></script>
+</body>
+</html>
